@@ -24,6 +24,16 @@ Create a virtual environment for the project (I highly recommend [virtualenvwrap
 export SAVEIT_DB_URL='postgres://psql_user:psql_password@localhost/saveit'
 ```
 
+Generate a Django secret key:
+```sh
+>python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+
+Save the secret key generated here to your environmental variables:
+```sh
+export DJANGO_SECRET_KEY='secret-key-that-you-just-generated'
+```
+
 Save the file and check that the environmental variable has been exported - if not, reopen your virtual environment and check again. 
 
 Install the project dependencies and remember to do so every time you pull the repo. From the top project directory:
