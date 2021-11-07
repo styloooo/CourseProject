@@ -10,12 +10,12 @@ Django 3.2.9
 Install PostgreSQL if you do not already have it. Enter the Postgres shell and create a new database called `saveit`: 
 
 ```sql
-CREATE DATABASE saveit;
+> CREATE DATABASE saveit;
 ```
 
 Clone this repo to where you will work on it:
 ```sh
-git clone http://this.repo/url
+> git clone http://this.repo/url
 ```
 
 Create a virtual environment for the project (I highly recommend [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)). Configure your environmental variable to point to your local Postgres installation. Using `virtualenvwrapper` you need to open: `$VIRTUAL_ENV/bin/postactivate` and add the following line. Change `psql_user` and `psql_password` to your local PSQL install's username and password:
@@ -28,7 +28,7 @@ Save the file and check that the environmental variable has been exported - if n
 
 Install the project dependencies and remember to do so every time you pull the repo. From the top project directory:
 ```sh
-pip install -r requirements.txt
+> pip install -r requirements.txt
 ```
 
 Finally, push the database migrations to Postgres:
@@ -39,5 +39,5 @@ Finally, push the database migrations to Postgres:
 
 Run the app to see if it launches without error:
 ```sh
-python manage.py runserver
+> python manage.py runserver
 ```
