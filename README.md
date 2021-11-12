@@ -18,6 +18,8 @@ Clone this repo to where you will work on it:
 > git clone http://this.repo/url
 ```
 
+All of these commands are issued from the project's top directory that has `manage.py` in it.
+
 Create a virtual environment for the project (I highly recommend [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)). Configure your environmental variable to point to your local Postgres installation. Using `virtualenvwrapper` you need to open: `$VIRTUAL_ENV/bin/postactivate` and add the following line. Change `psql_user` and `psql_password` to your local PSQL install's username and password:
 
 ```sh
@@ -41,13 +43,19 @@ Install the project dependencies and remember to do so every time you pull the r
 > pip install -r requirements.txt
 ```
 
+If you run into permissions issues with any of the following commands, you need to change the permissions on each of these shell files to make them executable as such:
+
+```sh
+> chmod +x shell_file_name.sh
+```
+
 Finally, push the database migrations to Postgres:
 ```sh
-> python manage.py makemigrations
-> python manage.py migrate
+> ./bin/makemigrations.sh
+> ./bin/migrate.sh
 ```
 
 Run the app to see if it launches without error:
 ```sh
-> python manage.py runserver
+> ./bin/runserver.sh
 ```
