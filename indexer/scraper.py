@@ -1,2 +1,2 @@
-def scraper(url):
+def scrape(url):
     raise NotImplementedError
