@@ -55,6 +55,11 @@ Finally, push the database migrations to Postgres:
 > ./bin/migrate.sh
 ```
 
+Download the required NLTK corpora (you only need to do this once per configuration):
+```sh
+./bin/setup_nltk.sh
+```
+
 Run the app to see if it launches without error:
 ```sh
 > ./bin/runserver.sh
