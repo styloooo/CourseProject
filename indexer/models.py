@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 class Document(models.Model):
     '''additional info on a document we don't want to keep in the docLexicon table'''
     title = models.CharField(max_length=255)  # taken from <title> tag on page
