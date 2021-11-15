@@ -2,7 +2,7 @@ from django.test import TestCase
 from indexer.models import TermLexicon
 
 # Create your tests here.
-class ModelsTestCase(TestCase):
+class TermLexiconTestCase(TestCase):
     def setUp(self):
         TermLexicon.objects.create(term="foo", frequency=5)
         TermLexicon.objects.create(term="bar", frequency=1)
