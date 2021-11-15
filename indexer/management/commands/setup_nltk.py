@@ -7,7 +7,9 @@ class Command(BaseCommand):
     help = 'Downloads necessary NLTK corpus files'
 
     def handle(self, *args, **options):
-        NLTK_PACKAGES_TO_INSTALL = ('stopwords',)
+        NLTK_PACKAGES_TO_INSTALL = (
+            'stopwords',
+        )
 
         if 'VIRTUAL_ENV' in environ.keys():
             download_dir = path.join(environ['VIRTUAL_ENV'], 'nltk_data')
