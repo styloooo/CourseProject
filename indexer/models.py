@@ -26,14 +26,3 @@ class DocumentLexicon(models.Model):
 # 1. Query each term from TermLexicon
 # 2. Query each term's set of documents from DocumentLexicon
 # 3. Initialize score accumulators and score each document
-
-# Indexing:
-# Expect a list of words for a document from scraper with page URL + original page full text 
-# After separating a document into atomic units and grouping...
-# 0. Do nothing if document is already present in the index (URL)
-# 1. Iterate over a doc's terms
-# 2. Perform any stemming/stopword elimination
-# 3. Check the TermLexicon for term's existence
-# 4. If term hasn't been added, created an entry and set its frequency to the document frequency 
-# 5. If a term has been previously added, add its document frequency to its overall frequency
-# 6. Create corresponding document entry
