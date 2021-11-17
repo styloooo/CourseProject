@@ -3,7 +3,7 @@ from django.db import models
 class Document(models.Model):
     '''additional info on a document we don't want to keep in the docLexicon table'''
     title = models.CharField(max_length=255)  # taken from <title> tag on page
-    url = models.URLField()
+    url = models.URLField(unique=True)
     text = models.TextField()  # raw page text for displaying some portion on retrieval (maybe 500-1000 words stored at most)
 
 class TermLexicon(models.Model):
