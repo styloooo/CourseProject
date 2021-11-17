@@ -26,3 +26,9 @@ class DocumentLexicon(models.Model):
 # 1. Query each term from TermLexicon
 # 2. Query each term's set of documents from DocumentLexicon
 # 3. Initialize score accumulators and score each document
+
+# In Document , each document we index receives one row - this is the central index table for documents.
+# DocumentLexicon is the model that links terms from the TermLexicon to the Document they were indexed from.
+# TermLexicon is our model representation of the terms we index - from this model you can follow the
+# Foreign Keys back to the DocumentLexicon to drill down on a term by document or follow another Foreign Key back
+# to its Document representation. 
