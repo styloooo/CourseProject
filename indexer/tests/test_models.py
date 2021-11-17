@@ -1,5 +1,5 @@
 from django.test import TestCase
-from indexer.models import TermLexicon
+from indexer.models import TermLexicon, Document
 
 # Create your tests here.
 class TermLexiconTestCase(TestCase):
@@ -16,3 +16,23 @@ class TermLexiconTestCase(TestCase):
         self.assertEqual(str(foo), "foo (5)")
         self.assertEqual(str(bar), "bar (1)")
         self.assertEqual(str(baz), "baz (123456)")
+
+class DocumentTestCase(TestCase):
+    def setUp(self):
+        self.foo = {
+            'url': "http://foo.com/",
+            'title': 'All The Foos',
+        }
+        self.bar = {
+            'url': "http://bar.org/",
+            'title': 'The Bar Org',
+        }
+        Document.objects.create(url=self.foo['url'], title=self.foo['title'], text="f")
+        Document.objects.create(url=self.bar['url'], title=self.bar['title'], text="b")
+
+    def test_document_str_function(self):
+        foo = Document.objects.get(url=self.foo['url'])
+        bar = Document.objects.get(url=self.bar['url'])
+
+        self.assertTrue(str(foo) == "{title}: {url}".format(title=self.foo['title'], url=self.foo['url']))
+        self.assertTrue(str(bar) == "{title}: {url}".format(title=self.bar['title'], url=self.bar['url']))

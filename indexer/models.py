@@ -6,6 +6,9 @@ class Document(models.Model):
     url = models.URLField(unique=True)
     text = models.TextField()  # raw page text for displaying some portion on retrieval (maybe 500-1000 words stored at most)
 
+    def __str__(self):
+        return "{title}: {url}".format(title=self.title, url=self.url)
+
 class TermLexicon(models.Model):
     term = models.CharField(max_length=500, unique=True)
     frequency = models.IntegerField()  # overall frequency in the corpus
