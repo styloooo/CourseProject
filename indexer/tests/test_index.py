@@ -14,7 +14,7 @@ class ParsedDocumentTestCase(TestCase):
     def testEmptyInput(self):
         parsedDoc = ParsedDocument([])
         self.assertTrue(len(parsedDoc.wordList) == 0)
-        self.assertTrue(len(parsedDoc.wordFrequencyMap) == 0)
+        self.assertTrue(len(parsedDoc.termFrequencyMap) == 0)
 
     def testSimpleStemmedInputWithStopWords(self):
         wordList = [
@@ -46,7 +46,7 @@ class ParsedDocumentTestCase(TestCase):
 
         parsedDoc = ParsedDocument(wordList)
         self.assertTrue(len(parsedDoc.wordList) == 6)
-        parsedMap = parsedDoc.wordFrequencyMap
+        parsedMap = parsedDoc.termFrequencyMap
         for parsedWord in parsedMap.keys():
             self.assertTrue(parsedMap[parsedWord] == baselineFreqMap[parsedWord])
 
@@ -64,7 +64,7 @@ class ParsedDocumentTestCase(TestCase):
 
         parsedDoc = ParsedDocument(wordList)
         self.assertTrue(len(parsedDoc.wordList) == 0)
-        self.assertTrue(len(parsedDoc.wordFrequencyMap) == 0)
+        self.assertTrue(len(parsedDoc.termFrequencyMap) == 0)
 
 class TestIndexerUpdateFunctions(TestCase):
     def setUp(self):

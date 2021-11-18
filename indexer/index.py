@@ -5,23 +5,23 @@ class ParsedDocument:
     def __process_word_list(self, word_list: list) -> list:
         # processing wordFreqMap and wordList separately would require iterating twice
         # so let's do it in the same loop
-        wordFrequencyMap = {}
+        termFrequencyMap = {}
         wordList = []
         for word in word_list:
             word = word.lower()
             if is_alpha(word) and not is_stopword(word):
                 stemmedWord = stem(word)
-                if stemmedWord not in wordFrequencyMap.keys():
-                    wordFrequencyMap[stemmedWord] = 1
+                if stemmedWord not in termFrequencyMap.keys():
+                    termFrequencyMap[stemmedWord] = 1
                     wordList.append(stemmedWord)
                 else:
-                    wordFrequencyMap[stemmedWord] += 1
+                    termFrequencyMap[stemmedWord] += 1
         
-        return wordList, wordFrequencyMap
+        return wordList, termFrequencyMap
             
 
     def __init__(self, word_list: list):
-        self.wordList, self.wordFrequencyMap = self.__process_word_list(word_list)
+        self.wordList, self.termFrequencyMap = self.__process_word_list(word_list)
 
 def update_documentLexicon_term_frequency(existingDocTerm: DocumentLexicon, newFrequency: int) -> None:
     '''
@@ -82,16 +82,26 @@ def index_document(indexParams: dict) -> None:
     doc = indexParams['documentContext']
     pDoc = indexParams['parsedDocument']
 
-def index(word_list: list, page_url: str, page_full_text: str) -> None:
+    # for term, frequency in pDoc.termFrequencyMap.items():
+
+
+
+def index(word_list: list, page_title: str, page_url: str, page_full_text: str) -> None:
     pDoc = ParsedDocument(word_list)
     doc, exists = Document.objects.get_or_create(url=page_url)
+
+    # Is it OK to update these regardless of update/create?
+    doc.title = page_title
+    doc.text = page_full_text
+    doc.save()
 
     indexParams = {
         'parsedDocument': pDoc,
         'documentContext': doc,
-        'docExists': exists,
-        'pageURL': page_url,
-        'pageFullText': page_full_text
+        'docExists': exists,  # may remove
+        'pageTitle': page_title,  # may remove
+        'pageURL': page_url,  # may remove
+        'pageFullText': page_full_text  # may remove
     }
 
     if exists:
