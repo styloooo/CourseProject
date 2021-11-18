@@ -1,7 +1,12 @@
 from django.test import TestCase
-from indexer.index import ParsedDocument
-from indexer.models import TermLexicon
+from indexer.models import TermLexicon, DocumentLexicon, Document
 from faker import Faker
+
+from indexer.index import (
+    ParsedDocument,
+    update_documentLexicon_term_frequency,
+    update_termLexicon_term_frequency,
+    )
 
 # Create your tests here.
 class ParsedDocumentTestCase(TestCase):
@@ -61,26 +66,30 @@ class ParsedDocumentTestCase(TestCase):
         self.assertTrue(len(parsedDoc.wordList) == 0)
         self.assertTrue(len(parsedDoc.wordFrequencyMap) == 0)
 
-class TestIndexer(TestCase):
-    pass    
-    # def setUp(self):
-    #     self.fake = Faker()
-    #     Faker.seed(0)
-    #     numDocs = 5
-    #     nb_sentences = 5
+class TestIndexerUpdateFunctions(TestCase):
+    def setUp(self):
+        overallFreq = 20
+        docFreq = 10
+        term = "Foo"
+        contextObj = Document.objects.create(title="Test Doc", url="http://testdoc.com/", text="f")
+        termObj = TermLexicon.objects.create(term=term, frequency=overallFreq)
+        docLexiconObj = DocumentLexicon.objects.create(context=contextObj, term=termObj, frequency=docFreq)
+        self.params = {
+            'contextObj': contextObj,
+            'termObj': termObj,
+            'docLexiconObj': docLexiconObj,
+            'term': term
+        }
 
-    #     self.docs = {}
-    #     for i in range(numDocs):
-    #         pageFullText = self.fake.paragraph(nb_sentences=nb_sentences)
-    #         wordList = pageFullText.replace('.', '').split(' ')
-    #         self.docs[self.fake.url()] = {
-    #             'pageFullText': pageFullText,
-    #             'wordList': wordList
-    #         }
+    def testDocumentLexiconUpdate(self):
+        newFreq = 5
+        update_documentLexicon_term_frequency(self.params['docLexiconObj'], newFreq)
+        self.assertTrue(self.params['docLexiconObj'].frequency == newFreq)
 
-    #     self.properties = {}
-    #     for key in self.docs.keys():
-            
-
-    # def testIndexerSingleDocument(self):
-    #     print(self.docs)
+    def testTermLexiconUpdate(self):
+        newFreq = 7
+        termObj = self.params['termObj']
+        oldOverallFreq = termObj.frequency
+        oldDocFreq = self.params['docLexiconObj'].frequency
+        update_termLexicon_term_frequency(termObj, self.params['docLexiconObj'], newFreq)
+        self.assertTrue(termObj.frequency == oldOverallFreq - oldDocFreq + newFreq)
