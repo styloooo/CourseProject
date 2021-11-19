@@ -78,4 +78,4 @@ This repo includes coverage testing dependencies for determining what lines in a
 coverage run manage.py test indexer -v 2 && coverage html && open htmlcov/index.html
 ```
 
-For more information check the docs [here](https://coverage.readthedocs.io/en/6.1.2/) for learning how to generate / review the report from Coverage.py. 
+For more information on configuring Coverage.py, check the docs [here](https://coverage.readthedocs.io/en/6.1.2/).
