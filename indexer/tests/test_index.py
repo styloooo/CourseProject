@@ -4,6 +4,7 @@ from faker import Faker
 
 from indexer.index import (
     ParsedDocument,
+    index_document,
     update_documentLexicon_term_frequency,
     update_termLexicon_term_frequency,
     )
@@ -66,7 +67,7 @@ class ParsedDocumentTestCase(TestCase):
         self.assertTrue(len(parsedDoc.wordList) == 0)
         self.assertTrue(len(parsedDoc.termFrequencyMap) == 0)
 
-class TestIndexerUpdateFunctions(TestCase):
+class TestIndexerUpdate(TestCase):
     def setUp(self):
         overallFreq = 20
         docFreq = 10
@@ -93,3 +94,88 @@ class TestIndexerUpdateFunctions(TestCase):
         oldDocFreq = self.params['docLexiconObj'].frequency
         update_termLexicon_term_frequency(termObj, self.params['docLexiconObj'], newFreq)
         self.assertTrue(termObj.frequency == oldOverallFreq - oldDocFreq + newFreq)
+
+    def testMultipleDocUpdate(self):
+        pass
+
+class TestIndexerInsert(TestCase):
+    def setUp(self):
+        self.faker = Faker()
+        Faker.seed(0)
+        numDocs = 5
+
+        contextObjs = []
+        pDocs = []
+        corpusTermFrequencies = {}
+
+        for num in range(numDocs):
+            text = self.faker.paragraph(nb_sentences=25)
+            title = self.faker.text(max_nb_chars=50).title()
+            url = self.faker.url()
+            contextObj = Document.objects.create(title=title, url=url, text=text)
+            contextObjs.append(contextObj)
+            wordList = text.replace('.', '').split(' ')
+            pDoc = ParsedDocument(wordList)
+            pDocs.append(pDoc)
+            for term, frequency in pDoc.termFrequencyMap.items():
+                if term not in corpusTermFrequencies.keys():
+                    corpusTermFrequencies[term] = pDoc.termFrequencyMap[term]
+                else:
+                    corpusTermFrequencies[term] += pDoc.termFrequencyMap[term]
+
+        self.params = {
+            'contextObjs': contextObjs,
+            'pDocs': pDocs,
+            'corpusTermFrequencies': corpusTermFrequencies,
+        }
+
+    def testSingleDocIndex(self):
+        pDoc = self.params['pDocs'][0]
+        docContext = self.params['contextObjs'][0]
+        
+        index_document({
+            'documentContext': docContext,
+            'parsedDocument': pDoc
+        })
+
+        for term, frequency in pDoc.termFrequencyMap.items():
+            overallTerm = TermLexicon.objects.get(term=term)
+            docTerm = DocumentLexicon.objects.get(term=overallTerm, context=docContext)
+            self.assertTrue(frequency == overallTerm.frequency)
+            self.assertTrue(frequency == docTerm.frequency)
+
+    def testMultipleDocIndex(self):
+        pDocs = self.params['pDocs']
+        contextObjs = self.params['contextObjs']
+        corpusTermFrequencies = self.params['corpusTermFrequencies']
+
+        for pDoc, docContext in zip(pDocs, contextObjs):
+            index_document({
+                'documentContext': docContext,
+                'parsedDocument': pDoc
+            })
+        
+        for term, frequency in corpusTermFrequencies.items():
+            overallTerm = TermLexicon.objects.get(term=term)
+            self.assertTrue(frequency == overallTerm.frequency)  # check that overall term freqs were set properly
+
+        for pDoc, docContext in zip(pDocs, contextObjs):
+            for term, docTermFrequency in pDoc.termFrequencyMap.items():
+                termObj = TermLexicon.objects.get(term=term)
+                docTerm = DocumentLexicon.objects.get(context=docContext, term=termObj)
+                self.assertTrue(docTermFrequency == docTerm.frequency)  # check that per-doc term freqs were set properly
+
+    def testDuplicateDocumentTermInsertion(self):
+        pDoc = self.params['pDocs'][0]
+        docContext = self.params['contextObjs'][0]
+        
+        duplicateTermKey = list(pDoc.termFrequencyMap.keys())[0]
+        duplicateTermFreq = pDoc.termFrequencyMap[duplicateTermKey]
+        term = TermLexicon.objects.create(term=duplicateTermKey, frequency=duplicateTermFreq)
+        DocumentLexicon.objects.create(term=term, context=docContext, frequency=duplicateTermFreq)
+
+        with self.assertRaises(RuntimeError):
+            index_document({
+                'documentContext': docContext,
+                'parsedDocument': pDoc
+            })

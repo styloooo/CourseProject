@@ -82,8 +82,20 @@ def index_document(indexParams: dict) -> None:
     doc = indexParams['documentContext']
     pDoc = indexParams['parsedDocument']
 
-    # for term, frequency in pDoc.termFrequencyMap.items():
+    # Needs tests
+    for docTerm, parsedFrequency in pDoc.termFrequencyMap.items():
+        try:
+            termLexiconTerm = TermLexicon.objects.get(term=docTerm)  # need to give an initial freq - get_or_create won't work so long as freq is non-nullable
+            termLexiconTerm.frequency += parsedFrequency
+            termLexiconTerm.save()
+        except TermLexicon.DoesNotExist:
+            termLexiconTerm = TermLexicon.objects.create(term=docTerm, frequency=parsedFrequency)
 
+        try:
+            docLexiconTerm = DocumentLexicon.objects.get(context=doc, term=termLexiconTerm)
+            raise RuntimeError("Found a duplicate term {termID} in DocumentLexicon that shouldn't be there".format(termID=docLexiconTerm.id))
+        except DocumentLexicon.DoesNotExist:
+            docLexiconTerm = DocumentLexicon.objects.create(context=doc, term=termLexiconTerm, frequency=parsedFrequency)
 
 
 def index(word_list: list, page_title: str, page_url: str, page_full_text: str) -> None:
