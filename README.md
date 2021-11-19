@@ -64,3 +64,12 @@ Run the app to see if it launches without error:
 ```sh
 > ./bin/runserver.sh
 ```
+
+# Testing
+To run tests from the command line (with default verbosity & all tests):
+
+```sh
+python manage.py test
+```
+
+This repo includes coverage testing dependencies for determining what lines in a module have been executed. Check the docs [here](https://coverage.readthedocs.io/en/6.1.2/) for learning how to generate / review the report from Coverage.py. 
