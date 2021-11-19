@@ -72,7 +72,7 @@ To run tests from the command line (with default verbosity & all tests):
 python manage.py test
 ```
 
-This repo includes coverage testing dependencies for determining what lines in a module have been executed. When executed from the project root, this command runs all project tests, generates a coverage report, and opens that report in a browser:
+This repo includes coverage testing dependencies for determining what lines in a module have been executed by tests. When executed from the project root, this command runs all project tests, generates a coverage report, and opens that report in a browser:
 
 ```sh
 coverage run manage.py test indexer -v 2 && coverage html && open htmlcov/index.html
