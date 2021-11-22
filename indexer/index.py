@@ -72,7 +72,6 @@ def index_document(indexParams: dict) -> None:
 
         try:
             docLexiconTerm = DocumentLexicon.objects.get(context=doc, term=termLexiconTerm)
-            print(docLexiconTerm.term, ' ', docLexiconTerm.frequency)
             raise RuntimeError("Found a duplicate term {termID} in DocumentLexicon that shouldn't be there".format(termID=docLexiconTerm.id))
         except DocumentLexicon.DoesNotExist:
             docLexiconTerm = DocumentLexicon.objects.create(context=doc, term=termLexiconTerm, frequency=parsedFrequency)
