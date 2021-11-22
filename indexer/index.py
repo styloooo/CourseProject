@@ -2,7 +2,7 @@ from indexer.models import Document, DocumentLexicon, TermLexicon
 from indexer.utils import is_alpha, is_stopword, stem 
 
 class ParsedDocument:
-    def __process_word_list(self, word_list: list) -> list:
+    def __process_word_list(self, word_list: list[str]) -> list[str]:
         # processing wordFreqMap and wordList separately would require iterating twice
         # so let's do it in the same loop
         termFrequencyMap = {}
@@ -18,55 +18,34 @@ class ParsedDocument:
                     termFrequencyMap[stemmedWord] += 1
         
         return wordList, termFrequencyMap
-            
+    
+    def get_unique_terms(self):
+        return self.termFrequencyMap.keys()
 
-    def __init__(self, word_list: list):
+    def __init__(self, word_list: list[str]):
         self.wordList, self.termFrequencyMap = self.__process_word_list(word_list)
 
-def update_documentLexicon_term_frequency(existingDocTerm: DocumentLexicon, newFrequency: int) -> None:
+def cleanup_indexed_document(indexParams: dict) -> None:
     '''
-    Adjusts document-term frequencies when updating a document that has been previously indexed.
-    Determines whether newFrequency == existingDocTerm.frequency before updating anything.
-
-    existingDocTerm: DocumentLexicon object corresponding to updated docTerm
-    newFrequency: Frequency to which DocumentLexicon term frequency should be set
-    '''
-    if existingDocTerm.frequency != newFrequency:
-        existingDocTerm.frequency = newFrequency
-        existingDocTerm.save()
-
-def __update_termLexicon_term_frequency(term: TermLexicon, existingDocTerm: DocumentLexicon, oldFrequency: int) -> None:
-    '''
-    Adjusts overall term frequencies in TermLexicon when updating documents that have previously been indexed.
-    Determines whether oldFrequency == existingDocTerm.frequency before updating anything.
-    This function *only* updates the TermLexicon - DocumentLexicon object must be updated before calling.
-
-    term: TermLexicon object corresponding to entry that needs to be updated
-    existingDocTerm: DocumentLexicon object corresponding to existing document term frequency (before update)
-    oldFrequency: frequency of a term before DocumentLexicon object was updated
-    '''
-    if existingDocTerm.frequency != oldFrequency:
-        term.frequency -= oldFrequency
-        term.frequency += existingDocTerm.frequency
-        term.save()
-
-def update_termLexicon_term_frequency(term: TermLexicon, existingDocTerm: DocumentLexicon, newFrequency: int) -> None:
-    oldFrequency = existingDocTerm.frequency
-    update_documentLexicon_term_frequency(existingDocTerm, newFrequency)
-    __update_termLexicon_term_frequency(term, existingDocTerm, oldFrequency)
-
-def update_indexed_document(indexParams: dict) -> None:
-    '''
-    Updates a document that has previously been indexed.
+    Deletes DocumentLexicon entries and adjusts TermLexicon frequencies for an existing Document before it is reindexed.
 
     indexParams: a map containing parameters for indexing
         parsedDocument:  ParsedDocument object containing stemmed word frequencies
         documentContext: Document object initialized with page URL
-        docExists:       boolean value indicating whether document already existed in index
+        docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
     '''
-    pass
+    doc = indexParams['documentContext']
+
+    oldDocTerms = DocumentLexicon.objects.filter(context=doc)
+    # Substract doc-term frequencies from corresponding TermLexicon entry
+    for oldDocTerm in oldDocTerms:
+        termLexiconTerm = oldDocTerm.term
+        termLexiconTerm.frequency -= oldDocTerm.frequency
+        termLexiconTerm.save()
+        oldDocTerm.delete()
+
 
 def index_document(indexParams: dict) -> None:
     '''
@@ -75,7 +54,7 @@ def index_document(indexParams: dict) -> None:
     indexParams: a map containing parameters for indexing
         parsedDocument:  ParsedDocument object containing stemmed word frequencies
         documentContext: Document object initialized with page URL
-        docExists:       boolean value indicating whether document already existed in index
+        docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
     '''
@@ -93,14 +72,15 @@ def index_document(indexParams: dict) -> None:
 
         try:
             docLexiconTerm = DocumentLexicon.objects.get(context=doc, term=termLexiconTerm)
+            print(docLexiconTerm.term, ' ', docLexiconTerm.frequency)
             raise RuntimeError("Found a duplicate term {termID} in DocumentLexicon that shouldn't be there".format(termID=docLexiconTerm.id))
         except DocumentLexicon.DoesNotExist:
             docLexiconTerm = DocumentLexicon.objects.create(context=doc, term=termLexiconTerm, frequency=parsedFrequency)
 
 
-def index(word_list: list, page_title: str, page_url: str, page_full_text: str) -> None:
+def index(word_list: list[str], page_title: str, page_url: str, page_full_text: str) -> None:
     pDoc = ParsedDocument(word_list)
-    doc, exists = Document.objects.get_or_create(url=page_url)
+    doc, created = Document.objects.get_or_create(url=page_url)
 
     # Is it OK to update these regardless of update/create?
     doc.title = page_title
@@ -110,16 +90,16 @@ def index(word_list: list, page_title: str, page_url: str, page_full_text: str) 
     indexParams = {
         'parsedDocument': pDoc,
         'documentContext': doc,
-        'docExists': exists,  # may remove
+        'docCreated': created,  # may remove
         'pageTitle': page_title,  # may remove
         'pageURL': page_url,  # may remove
         'pageFullText': page_full_text  # may remove
     }
 
-    if exists:
-        update_indexed_document(indexParams)
-    else:
-        index_document(indexParams)
+    if not created:
+        cleanup_indexed_document(indexParams)
+
+    index_document(indexParams)
         
 
 
