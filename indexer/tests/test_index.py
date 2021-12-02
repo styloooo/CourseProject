@@ -18,8 +18,8 @@ class ParsedDocumentTestCase(TestCase):
 
     def testEmptyInput(self):
         parsedDoc = ParsedDocument([])
-        self.assertTrue(len(parsedDoc.wordList) == 0)
-        self.assertTrue(len(parsedDoc.termFrequencyMap) == 0)
+        self.assertTrue(len(parsedDoc.words) == 0)
+        self.assertTrue(len(parsedDoc.term_frequency_map) == 0)
 
     def testSimpleStemmedInputWithStopWords(self):
         wordList = [
@@ -50,8 +50,8 @@ class ParsedDocumentTestCase(TestCase):
         }
 
         parsedDoc = ParsedDocument(wordList)
-        self.assertTrue(len(parsedDoc.wordList) == 6)
-        parsedMap = parsedDoc.termFrequencyMap
+        self.assertTrue(len(parsedDoc.words) == 6)
+        parsedMap = parsedDoc.term_frequency_map
         for parsedWord in parsedMap.keys():
             self.assertTrue(parsedMap[parsedWord] == baselineFreqMap[parsedWord])
 
@@ -68,8 +68,8 @@ class ParsedDocumentTestCase(TestCase):
         ] 
 
         parsedDoc = ParsedDocument(wordList)
-        self.assertTrue(len(parsedDoc.wordList) == 0)
-        self.assertTrue(len(parsedDoc.termFrequencyMap) == 0)
+        self.assertTrue(len(parsedDoc.words) == 0)
+        self.assertTrue(len(parsedDoc.term_frequency_map) == 0)
 
     def testUniqueTermKeyGetter(self):
         numWords = 10
@@ -138,11 +138,11 @@ class IndexerHelpersTestCase(TestCase):
             wordList = text.replace('.', '').split(' ')
             pDoc = ParsedDocument(wordList)
             pDocs.append(pDoc)
-            for term, frequency in pDoc.termFrequencyMap.items():
+            for term, frequency in pDoc.term_frequency_map.items():
                 if term not in corpusTermFrequencies.keys():
-                    corpusTermFrequencies[term] = pDoc.termFrequencyMap[term]
+                    corpusTermFrequencies[term] = pDoc.term_frequency_map[term]
                 else:
-                    corpusTermFrequencies[term] += pDoc.termFrequencyMap[term]
+                    corpusTermFrequencies[term] += pDoc.term_frequency_map[term]
 
         self.params = {
             'contextObjs': contextObjs,
@@ -159,7 +159,7 @@ class IndexerHelpersTestCase(TestCase):
             'parsedDocument': pDoc
         })
 
-        for term, frequency in pDoc.termFrequencyMap.items():
+        for term, frequency in pDoc.term_frequency_map.items():
             overallTerm = TermLexicon.objects.get(term=term)
             docTerm = DocumentLexicon.objects.get(term=overallTerm, context=docContext)
             self.assertTrue(frequency == overallTerm.frequency)
@@ -181,7 +181,7 @@ class IndexerHelpersTestCase(TestCase):
             self.assertTrue(frequency == overallTerm.frequency)  # check that overall term freqs were set properly
 
         for pDoc, docContext in zip(pDocs, contextObjs):
-            for term, docTermFrequency in pDoc.termFrequencyMap.items():
+            for term, docTermFrequency in pDoc.term_frequency_map.items():
                 termObj = TermLexicon.objects.get(term=term)
                 docTerm = DocumentLexicon.objects.get(context=docContext, term=termObj)
                 self.assertTrue(docTermFrequency == docTerm.frequency)  # check that per-doc term freqs were set properly
@@ -191,7 +191,7 @@ class IndexerHelpersTestCase(TestCase):
         docContext = self.params['contextObjs'][0]
         
         duplicateTermKey = list(pDoc.get_unique_terms())[0]
-        duplicateTermFreq = pDoc.termFrequencyMap[duplicateTermKey]
+        duplicateTermFreq = pDoc.term_frequency_map[duplicateTermKey]
         term = TermLexicon.objects.create(term=duplicateTermKey, frequency=duplicateTermFreq)
         DocumentLexicon.objects.create(term=term, context=docContext, frequency=duplicateTermFreq)
 
@@ -253,9 +253,9 @@ class IndexerWrapperTestCase(TestCase):
             )
             for term in pDoc.get_unique_terms():
                 if term not in corpusTermFrequencies.keys():
-                    corpusTermFrequencies[term] = pDoc.termFrequencyMap[term]
+                    corpusTermFrequencies[term] = pDoc.term_frequency_map[term]
                 else:
-                    corpusTermFrequencies[term] += pDoc.termFrequencyMap[term]
+                    corpusTermFrequencies[term] += pDoc.term_frequency_map[term]
 
         self.params = {
             'pDocs': pDocs,
@@ -290,14 +290,14 @@ class IndexerWrapperTestCase(TestCase):
             if term not in pDocUpdate.get_unique_terms():
                 self.assertTrue(termLexiconTerm.frequency == 0)
             else:
-                self.assertTrue(termLexiconTerm.frequency == pDocUpdate.termFrequencyMap[termLexiconTerm.term])
+                self.assertTrue(termLexiconTerm.frequency == pDocUpdate.term_frequency_map[termLexiconTerm.term])
 
         for term in pDocUpdate.get_unique_terms():
             docLexiconTerm = DocumentLexicon.objects.get(
                 context=docContext,
                 term=TermLexicon.objects.get(term=term)
             )
-            self.assertTrue(docLexiconTerm.frequency == pDocUpdate.termFrequencyMap[docLexiconTerm.term.term])
+            self.assertTrue(docLexiconTerm.frequency == pDocUpdate.term_frequency_map[docLexiconTerm.term.term])
 
     def testIndexWrapperSingleDocument(self):
         pDoc = self.params['pDocs'][0]
@@ -317,10 +317,10 @@ class IndexerWrapperTestCase(TestCase):
         self.assertTrue(len(pDoc.get_unique_terms()) == termLexiconTerms.count() == docLexiconTerms.count())
 
         for term in termLexiconTerms:
-            self.assertTrue(term.frequency == pDoc.termFrequencyMap[term.term])
+            self.assertTrue(term.frequency == pDoc.term_frequency_map[term.term])
 
         for term in docLexiconTerms:
-            self.assertTrue(term.frequency == pDoc.termFrequencyMap[term.term.term])
+            self.assertTrue(term.frequency == pDoc.term_frequency_map[term.term.term])
 
     def testIndexWrapperMultipleDocuments(self):
         corpusTermFrequencies = self.params['corpusTermFrequencies']
@@ -351,5 +351,5 @@ class IndexerWrapperTestCase(TestCase):
 
             for docTerm in docTerms:
                 termStr = docTerm.term.term
-                pDocTermFreq = pDoc.termFrequencyMap[termStr]
+                pDocTermFreq = pDoc.term_frequency_map[termStr]
                 self.assertTrue(docTerm.frequency == pDocTermFreq)
