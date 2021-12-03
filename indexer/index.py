@@ -7,7 +7,7 @@ class ParsedDocument:
     """
     This class normalizes a set of input words and sums their frequencies
     """
-    def __process_word_list(self, word_list: list[str]) -> list[str]:
+    def __process_word_list(self, word_list):
         # processing wordFreqMap and wordList separately would require iterating twice
         # so let's do it in the same loop
         term_frequency_map = {}
@@ -28,10 +28,10 @@ class ParsedDocument:
         """Returns a set of unique terms parsed by the instance"""
         return self.term_frequency_map.keys()
 
-    def __init__(self, input_words: list[str]):
+    def __init__(self, input_words):
         self.words, self.term_frequency_map = self.__process_word_list(input_words)
 
-def cleanup_indexed_document(index_params: dict) -> None:
+def cleanup_indexed_document(index_params):
     '''
     Deletes DocumentLexicon entries and adjusts TermLexicon frequencies for an existing Document
     before it is reindexed.
@@ -42,6 +42,9 @@ def cleanup_indexed_document(index_params: dict) -> None:
         docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
+
+    returns:
+        None
     '''
     doc = index_params['documentContext']
 
@@ -54,7 +57,7 @@ def cleanup_indexed_document(index_params: dict) -> None:
         old_doc_term.delete()
 
 
-def index_document(index_params: dict) -> None:
+def index_document(index_params):
     '''
     Indexes a document that has not previously been indexed.
 
@@ -64,6 +67,9 @@ def index_document(index_params: dict) -> None:
         docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
+
+    returns:
+        None
     '''
     doc = index_params['documentContext']
     p_doc = index_params['parsedDocument']
@@ -91,7 +97,7 @@ def index_document(index_params: dict) -> None:
                 context=doc, term=term_lexicon_term, frequency=parsed_frequency)
 
 
-def index(word_list: list[str], page_title: str, page_url: str, page_full_text: str) -> None:
+def index(word_list, page_title, page_url, page_full_text):
     """
     Wrapper function for indexing a document
 
@@ -99,6 +105,9 @@ def index(word_list: list[str], page_title: str, page_url: str, page_full_text: 
     page_title:     title of the page/document to be indexed
     page_url:       URL of the page/document to be indexed
     page_full_text: full text of page/document to be indexed
+
+    returns:
+        None
     """
     p_doc = ParsedDocument(word_list)
     doc, created = Document.objects.get_or_create(url=page_url)
