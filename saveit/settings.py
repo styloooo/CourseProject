@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'saveit.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # This is kinda hacky
-SQLITE_URL = BASE_DIR / 'saveit.db'
+SQLITE_URL = BASE_DIR / 'db.sqlite3'
 SQLITE_URL = 'sqlite:////' + str(SQLITE_URL)
 
 DATABASES = {
