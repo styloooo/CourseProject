@@ -19,5 +19,5 @@ from indexer import urls as indexer_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('indexer/', include(indexer_urls)),
+    path('', include(indexer_urls)),
 ]

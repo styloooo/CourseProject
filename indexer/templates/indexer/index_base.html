@@ -2,8 +2,9 @@
 {% block custom_head %}
 <title>SaveIt - Indexer</title>
 {% endblock custom_head %}
-
-<div>
+{% block app_base %}
+<div class="container-fluid">
     {% block content %}
     {% endblock content %}
 </div>
+{% endblock app_base %}

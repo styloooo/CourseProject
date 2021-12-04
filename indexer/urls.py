@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from indexer.views import IndexPage
+from indexer.views import IndexDocumentView, QueryDocumentView, RetrievedDocumentView
 
 urlpatterns = [
-    path('', IndexPage.as_view()),
+    path('', IndexDocumentView.as_view(), name="indexer-home"),
+    path('search', QueryDocumentView.as_view(), name='indexer-search'),
+    path('results/<query>', RetrievedDocumentView.as_view(), name='indexer-results'),
 ]

@@ -1,7 +1,17 @@
-{% extends 'indexer/index_base.html' %}
+{% extends 'indexer/index_search_base.html' %}
 {% comment %} indexing page - enter a URL input {% endcomment %}
-{% block content %}
-<div>
-    <p>Hello!</p>
-</div>
-{% endblock content %}
+{% block page_title %}
+    Index a Document
+{% endblock page_title %}
+
+{% block custom_alert %}
+    {% if scraped_url %}
+        <div class="alert alert-success" role="alert">
+            Success! Indexing {{ scraped_url }}...
+        </div>
+    {% endif %}
+{% endblock custom_alert %}
+
+{% block button_text %}
+Index
+{% endblock button_text %}
