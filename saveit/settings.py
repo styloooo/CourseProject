@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import dj_database_url
-
 from pathlib import Path
 from os import environ
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'saveit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# This is kinda hacky
+SQLITE_URL = BASE_DIR / 'saveit.db'
+SQLITE_URL = 'sqlite:////' + str(SQLITE_URL)
+
 DATABASES = {
-    'default': dj_database_url.parse(environ['SAVEIT_DB_URL'])
+    'default': dj_database_url.parse(SQLITE_URL)
 }
 
 
