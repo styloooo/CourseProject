@@ -39,7 +39,6 @@ def cleanup_indexed_document(index_params):
     indexParams: a map containing parameters for indexing
         parsedDocument:  ParsedDocument object containing stemmed word frequencies
         documentContext: Document object initialized with page URL
-        docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
 
@@ -64,7 +63,6 @@ def index_document(index_params):
     indexParams: a map containing parameters for indexing
         parsedDocument:  ParsedDocument object containing stemmed word frequencies
         documentContext: Document object initialized with page URL
-        docCreated:      boolean value indicating whether document was created in index
         pageURL:         String corresponding to indexed document's URL
         pageFullText:    String of document's full text
 
@@ -110,23 +108,27 @@ def index(word_list, page_title, page_url, page_full_text):
         None
     """
     p_doc = ParsedDocument(word_list)
-    doc, created = Document.objects.get_or_create(url=page_url)
+    try:
+        doc = Document.objects.get(url=page_url)
+        doc.title = page_title
+        doc.text = page_full_text
+        doc.save()
+        doc_cleanup_needed = True
+    except Document.DoesNotExist:
+        doc = Document.objects.create(url=page_url, title=page_title, text=page_full_text)
+        doc_cleanup_needed = False
 
     # Is it OK to update these regardless of update/create?
-    doc.title = page_title
-    doc.text = page_full_text
-    doc.save()
 
     index_params = {
         'parsedDocument': p_doc,
         'documentContext': doc,
-        'docCreated': created,  # may remove
         'pageTitle': page_title,  # may remove
         'pageURL': page_url,  # may remove
         'pageFullText': page_full_text  # may remove
     }
 
-    if not created:
+    if doc_cleanup_needed:
         cleanup_indexed_document(index_params)
 
     index_document(index_params)
