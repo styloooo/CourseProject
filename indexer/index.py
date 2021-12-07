@@ -120,9 +120,6 @@ def index(word_list, page_title, page_url, page_full_text):
     index_params = {
         'parsedDocument': p_doc,
         'documentContext': doc,
-        'pageTitle': page_title,  # may remove
-        'pageURL': page_url,  # may remove
-        'pageFullText': page_full_text  # may remove
     }
 
     if doc_cleanup_needed:
