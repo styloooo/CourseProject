@@ -72,7 +72,6 @@ def index_document(index_params):
     doc = index_params['documentContext']
     p_doc = index_params['parsedDocument']
 
-    # Needs tests
     for doc_term, parsed_frequency in p_doc.term_frequency_map.items():
         try:
             term_lexicon_term = TermLexicon.objects.get(term=doc_term)
@@ -117,8 +116,6 @@ def index(word_list, page_title, page_url, page_full_text):
     except Document.DoesNotExist:
         doc = Document.objects.create(url=page_url, title=page_title, text=page_full_text)
         doc_cleanup_needed = False
-
-    # Is it OK to update these regardless of update/create?
 
     index_params = {
         'parsedDocument': p_doc,
