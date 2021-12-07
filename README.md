@@ -139,4 +139,4 @@ coverage run manage.py test indexer -v 2 && coverage html && open htmlcov/index.
 
 For more information on configuring Coverage.py, check the docs [here](https://coverage.readthedocs.io/en/6.1.2/).
 
-# (4)
+# (4) TK
