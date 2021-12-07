@@ -21,7 +21,10 @@ def scrape(url):
         a tuple of True and dict of word_list, page_text, and page_title when page was successfully scraped
         a tuple of False and dict of status_code when something went wrong on request
     """
-    request = get(url)
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+    }
+    request = get(url, headers=headers)
     if request.status_code != 200:
         return False, {'status_code': request.status_code}
 
