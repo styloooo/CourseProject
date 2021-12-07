@@ -40,8 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # apps
     'indexer',
+    # dependencies
+    'crispy_forms',
 ]
+
+# Bootstrap Form support
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,7 +64,10 @@ ROOT_URLCONF = 'saveit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR/'indexer'/'templates',
+            BASE_DIR/'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

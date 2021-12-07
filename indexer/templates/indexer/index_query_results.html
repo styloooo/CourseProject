@@ -1,0 +1,24 @@
+{% extends 'indexer/index_base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm">
+            <h1>Browse Results</h1>
+            <h3>This is what we found for query {{ query }}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div class="list-group">
+                {% for doc in object_list %}
+                    <a href="{{ doc.url }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ doc.title }}</h5>
+                        <small>3 days ago</small>
+                    </div>
+                    <p class="mb-1">{{ doc.text | slice:":255" }}</p>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

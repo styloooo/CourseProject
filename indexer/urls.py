@@ -13,11 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from indexer import urls as indexer_urls
+from django.urls import path
+from indexer.views import IndexDocumentView, QueryDocumentView, RetrievedDocumentView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include(indexer_urls)),
+    path('', IndexDocumentView.as_view(), name="indexer-home"),
+    path('search', QueryDocumentView.as_view(), name='indexer-search'),
+    path('results/<query>', RetrievedDocumentView.as_view(), name='indexer-results'),
 ]
