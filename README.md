@@ -66,6 +66,12 @@ The document is now indexed.
 ## <a name="retrieval">`indexer.retrieve`</a>
 ### File name: `indexer/retrieve.py`
 
+`indexer`.`retrieve` takes a string parameter that holds the input query created by user. It first parses the input query into a list of stemmed words after removal of stop words. It then queries the backend database which stores the indexed documents information for term frequency and its context.
+
+The implemented retrieval logic calculates the TF-IDF with smoothed TF and IDF transformations for the input query as well as all documents in the corpus, using information retrieved from the index database. It then calculates the cosine similarity score between the input query and each document based on their TF-IDF values.
+
+Finally, a ranked dictionary is returned with the document IDs as keys, similarity score as values, ranked from the highest similarity score to the lowest for all documents in the corpus.
+
 # (3) Project Set Up 
 Clone this repo to where you will work on it:
 ```sh
