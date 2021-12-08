@@ -5,6 +5,7 @@ from django.urls import reverse
 from indexer.forms import URLForm, QueryForm
 from indexer.scraper import scrape
 from indexer.retrieve import retrieve
+from indexer.index import index
 from indexer.models import Document
 
 # Create your views here.
@@ -19,17 +20,35 @@ class IndexDocumentView(FormView):
         context['slug'] = 'indexer-index'
         if 'scraped_url' in self.request.session.keys():
             context['scraped_url'] = self.request.session['scraped_url']
-            self.request.session.flush()
+        if 'scraped_status_code' in self.request.session.keys():
+            context['scraped_status_code'] = self.request.session['scraped_status_code']
+        if 'page_was_scraped' in self.request.session.keys():
+            context['page_was_scraped'] = True
+        else:
+            context['page_was_scraped'] = False
+        self.request.session.flush()
         return context
 
     def form_valid(self, form):
-        url = form.cleaned_data['url']
-        try:
-            scrape(url)
-        except NotImplementedError:
-            if form.is_valid():
-                print(f"Scraping {url}...")
-                self.request.session['scraped_url'] = url
+        if form.is_valid():
+            # print(f"Scraping {url}...")
+            url = form.cleaned_data['url']
+            self.request.session['scraped_url'] = url
+            scrape_results = scrape(url)
+            page_is_scraped_successfully = scrape_results[0]
+            page_status_code = scrape_results[1]['status_code']
+            self.request.session['scraped_status_code'] = page_status_code
+            self.request.session['page_was_scraped'] = True
+            if page_is_scraped_successfully:
+                if page_status_code == 200:
+                    word_list = scrape_results[1]['word_list']
+                    page_full_text = scrape_results[1]['page_full_text']
+                    page_title = scrape_results[1]['page_title']
+                    index(word_list, page_title, url, page_full_text)
+                else:
+                    print(f'error: {page_status_code}')
+            else:
+                print('page not found')
 
         return super().form_valid(form)
 

@@ -5,10 +5,22 @@
 {% endblock page_title %}
 
 {% block custom_alert %}
-    {% if scraped_url %}
-        <div class="alert alert-success" role="alert">
-            Success! Indexing {{ scraped_url }}...
-        </div>
+    {% if page_was_scraped %}
+        {% if scraped_status_code %}
+            {% if scraped_status_code == 200 %}
+                <div class="alert alert-success" role="alert">
+                    Success! Indexing {{ scraped_url }}...
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Sorry, we ran into an error indexing {{ scraped_url }}: the page returned status code {{ scraped_status_code }}.
+                </div>
+            {% endif %}
+        {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Sorry, we were unable to index a page at {{ scraped_url }}.
+                </div>
+            {% endif %}
     {% endif %}
 {% endblock custom_alert %}
 

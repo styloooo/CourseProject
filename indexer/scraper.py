@@ -1,4 +1,4 @@
-from requests import get
+from requests import get, ConnectionError
 from bs4 import BeautifulSoup
 
 def get_words(full_page_text):
@@ -24,20 +24,27 @@ def scrape(url):
     headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
     }
-    request = get(url, headers=headers)
-    if request.status_code != 200:
-        return False, {'status_code': request.status_code}
+    try:
+        request = get(url, headers=headers)
+    except ConnectionError:
+        return False, {'status_code': None}
+
+    status_code = request.status_code
+
+    if status_code != 200:
+        return False, {'status_code': status_code}
 
     soup = BeautifulSoup(request.text, 'html.parser')
 
     for script in soup(['script', 'style']):
         script.decompose()
 
-    page_title = soup.title.text
+    page_title = soup.title.text.strip()
     page_raw_text = soup.get_text()
     page_full_text = get_full_page_text(page_raw_text)
     word_list = get_words(page_full_text)
     return True, {
+        'status_code': status_code,
         'word_list': word_list,
         'page_full_text': page_full_text,
         'page_title': page_title
