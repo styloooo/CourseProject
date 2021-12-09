@@ -1,6 +1,7 @@
 # from django.shortcuts import render
 from django.views.generic import FormView, ListView
 from django.urls import reverse
+from django.db.models import Case, When
 # from django.http import HttpResponseServerError
 from indexer.forms import URLForm, QueryForm
 from indexer.scraper import scrape
@@ -85,12 +86,13 @@ class RetrievedDocumentView(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         self.query = self.kwargs.get('query')
-        try:
-            doc_IDs = retrieve(self.query)
-        except NotImplementedError:
-            doc_IDs = []
-            print(f'Processing query {self.query}...')
-        if doc_IDs:
-            qs.filter(pk__in=doc_IDs)
+        doc_sims = retrieve(self.query)
+        docs = [doc[0] for doc in doc_sims if doc[1] != 1.0]
+        print(doc_sims)
+        # ordered_doc_ids = [doc_tuple[0] for doc_tuple in doc_sims]
+        # preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_doc_ids)]) 
+        # print(preserved)
+        if doc_sims:
+            qs = docs
 
         return qs

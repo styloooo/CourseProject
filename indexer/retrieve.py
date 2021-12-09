@@ -100,8 +100,8 @@ def retrieve(query):
     
     for doc in all_docs.iterator():
         tf_idf_document = compute_tf_idf_document(doc, idf_corpus)
-        similarity[doc.id] = cosine_similarity_query_document(tf_idf_query, tf_idf_document)
+        similarity[doc] = cosine_similarity_query_document(tf_idf_query, tf_idf_document)
     
-    ranked_similarity = dict(sorted(similarity.items(), key=lambda item: item[1], reverse=True))
+    ranked_similarity = tuple(sorted(similarity.items(), key=lambda item: item[1], reverse=True))
 
     return ranked_similarity
