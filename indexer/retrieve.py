@@ -50,7 +50,8 @@ def compute_tf_idf_query(query, idf_corpus):
     query_term_frequency_map = parse_query(query)
     for word in query_term_frequency_map.keys():
         tf = query_term_frequency_map[word]
-        smoothed_tf = math.log(1+tf)
+        # smoothed_tf = math.log(1+tf)
+        smoothed_tf = math.log(1.2+tf)
         if word in idf_corpus.keys():
             tf_idf_query[word] = smoothed_tf * idf_corpus[word]
         else:
@@ -104,7 +105,7 @@ def retrieve(query):
     for doc in all_docs.iterator():
         tf_idf_document = compute_tf_idf_document(doc, idf_corpus)
         doc_sim = cosine_similarity_query_document(tf_idf_query, tf_idf_document)
-        if doc_sim != 1.0:  # completely non-similar documents are currently output as 1.0
+        if doc_sim <= 0.997441:  # completely non-similar documents are currently output as 1.0
             similarity[doc] = doc_sim
     print(similarity)
     
