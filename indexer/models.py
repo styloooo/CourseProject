@@ -1,6 +1,7 @@
 """This module serves as model definitions for the indexer app"""
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 
 EMPTY_STRING = ''
 EMPTY_STRING_MESSAGE = "Database should not contain empty string for {attribute} on {model_name}"
@@ -8,7 +9,7 @@ EMPTY_STRING_MESSAGE = "Database should not contain empty string for {attribute}
 class Document(models.Model):
     '''additional info on a document we don't want to keep in the docLexicon table'''
     title = models.CharField(max_length=255)  # taken from <title> tag on page
-    url = models.URLField(unique=True)
+    url = models.TextField(unique=True, validators=[URLValidator()])
     # raw page text for displaying some portion on retrieval
     # (maybe 500-1000 words stored at most)
     text = models.TextField()
