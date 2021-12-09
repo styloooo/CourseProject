@@ -1,4 +1,5 @@
 from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.porter import PorterStemmer
 
 def stem(word):
@@ -9,6 +10,7 @@ def stem(word):
     returns:
         str: String of stemmed word
     """
+    # stemmer = SnowballStemmer('english')
     stemmer = PorterStemmer()
     return stemmer.stem(word)
 
@@ -32,6 +34,9 @@ def is_alpha(word):
     returns:
         bool: True if word only consists of alphabetic characters
     """
-    return word.isalpha()
+    # return word.isalpha()
+    allowed_chars = set(("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-'"))
+    validation = set((word))
+    return validation.issubset(allowed_chars)
 
 # Stem words.words() and check against it for verification?
