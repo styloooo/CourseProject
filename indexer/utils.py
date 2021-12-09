@@ -10,8 +10,8 @@ def stem(word):
     returns:
         str: String of stemmed word
     """
-    # stemmer = SnowballStemmer('english')
-    stemmer = PorterStemmer()
+    stemmer = SnowballStemmer('english')
+    # stemmer = PorterStemmer()
     return stemmer.stem(word)
 
 def is_stopword(word):
