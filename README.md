@@ -6,6 +6,12 @@ Please fork this repository and paste the github link of your fork on Microsoft 
 Project built using Python 3.9.2
 Django 3.2.9
 
+# Presentation Slides
+Please note that a PowerPoint version of our slides are available to be downloaded [here](https://uofi.box.com/s/1bwnz9fz1rvgbaohxhniwct7cl146dq7). Additionally, a PDF version of our slides is available in this repository.
+
+# Video
+Our video can be downloaded [here](https://uofi.box.com/s/b01tt5j9vawb63pn6hqdhm45x08p1fd4).
+
 # (1) Overview of the Project
 SaveIt is a web application that enables a user to index a web page by entering a URL for later full-text search retrieval. This web application could serve as a foundational platform on which extensions for page indexing and retrieval could later be built. 
 Indexing pages for full text retrieval has utility in research and hobby applications in enabling a user to save a useful page without needing to document exactly what is on that page.
@@ -145,4 +151,27 @@ coverage run manage.py test indexer -v 2 && coverage html && open htmlcov/index.
 
 For more information on configuring Coverage.py, check the docs [here](https://coverage.readthedocs.io/en/6.1.2/).
 
-# (4) TK
+# (4) Team Member Contributions
+## Tyler Davis (tadavis2)
+* Drafted proposal & integrated feedback 
+* Set up project task assignments and asked group members to pick task(s) (11/7/21)
+* Assigned to implement module: [index](#index)
+* Assigned to implement database [models](#models) / project setup
+* Initial Django project configuration
+* Defined database models
+* Implemented module: [index](#index)
+* Implemented module: [scraper](#scraper)
+* Implemented frontend
+
+## Kee Dong (yuqingd2)
+* Provided proposal input
+* Assigned to implement module: [retrieval](#retrieval)
+* Implemented module: [retrieval](#retrieval)
+    * Please note that Tyler pushed the commits for this module on Kee's behalf
+    * Kee authored this module and its tests but was unable to push it to Git at the time due to travel / time constraints
+* Lead on presentation draft
+
+## Mukund Mudhusdan (mukundm2)
+* Provided proposal input
+* Assigned to implement module: [scraper](#scraper)
+* No deliverable
