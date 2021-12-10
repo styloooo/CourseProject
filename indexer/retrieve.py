@@ -105,9 +105,10 @@ def retrieve(query):
     for doc in all_docs.iterator():
         tf_idf_document = compute_tf_idf_document(doc, idf_corpus)
         doc_sim = cosine_similarity_query_document(tf_idf_query, tf_idf_document)
-        if doc_sim <= 0.997441:  # completely non-similar documents are currently output as 1.0
+        # print(f"{doc}: {doc_sim}")
+        if doc_sim < 1.0:  # completely non-similar documents are currently output as 1.0
             similarity[doc] = doc_sim
-    print(similarity)
+    # print(similarity)
     
     # ranked_similarity = tuple(sorted(similarity.items(), key=lambda item: item[1], reverse=True))
     # print(similarity)
