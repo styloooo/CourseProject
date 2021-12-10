@@ -47,9 +47,11 @@ class IndexDocumentView(FormView):
                     page_title = scrape_results[1]['page_title']
                     index(word_list, page_title, url, page_full_text)
                 else:
-                    print(f'error: {page_status_code}')
+                    # print(f'error: {page_status_code}')
+                    pass
             else:
-                print('page not found')
+                # print('page not found')
+                pass
 
         return super().form_valid(form)
 
@@ -85,14 +87,21 @@ class RetrievedDocumentView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        print(qs)
         self.query = self.kwargs.get('query')
-        doc_sims = retrieve(self.query)
-        docs = [doc[0] for doc in doc_sims if doc[1] != 1.0]
-        print(doc_sims)
+        ranked_docs = retrieve(self.query)
+        # doc_sims = retrieve(self.query)
+        # docs = [doc[0] for doc in doc_sims if doc[1] != 1.0]
+        # print(doc_sims)
         # ordered_doc_ids = [doc_tuple[0] for doc_tuple in doc_sims]
         # preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_doc_ids)]) 
         # print(preserved)
-        if doc_sims:
-            qs = docs
+        # if doc_sims:
+        #     qs = docs
+        # print(ranked_docs)
+        if ranked_docs:
+            qs = ranked_docs
+        else:
+            qs = Document.objects.none()
 
         return qs
