@@ -19,6 +19,9 @@ class Command(BaseCommand):
             'https://books.toscrape.com/catalogue/foolproof-preserving-a-guide-to-small-batch-jams-jellies-pickles-condiments-and-more-a-foolproof-guide-to-making-small-batch-jams-jellies-pickles-condiments-and-more_978/index.html',
             'https://stackoverflow.com/questions/10052220/advantages-to-using-urlfield-over-textfield',
             'https://stackoverflow.com/questions/26028200/why-is-django-creating-my-textfield-as-a-varchar-in-the-postgresql-database?rq=1',
+            'https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html',
+            'https://www.wikiwand.com/en/A_Light_in_the_Attic',
+
         )
 
         num_successfully_indexed = 0
